@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ExpenseIQ — Smart Expense Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo">💸 ExpenseIQ</div>
+    <nav>
+      <a class="nav-item active" onclick="showSection('dashboard')">📊 Dashboard</a>
+      <a class="nav-item" onclick="showSection('transactions')">📋 Transactions</a>
+      <a class="nav-item" onclick="showSection('add')">➕ Add New</a>
+    </nav>
+    <div class="sidebar-footer">Built with Node.js + Docker + Jenkins</div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="section active">
+      <div class="page-header">
+        <h1>Dashboard</h1>
+        <span class="date-badge" id="todayDate"></span>
+      </div>
+
+      <!-- Summary Cards -->
+      <div class="cards-grid">
+        <div class="card balance-card">
+          <div class="card-label">Total Balance</div>
+          <div class="card-value" id="balance">₹0</div>
+          <div class="card-sub">Net savings this month</div>
+        </div>
+        <div class="card income-card">
+          <div class="card-label">Total Income</div>
+          <div class="card-value" id="income">₹0</div>
+          <div class="card-icon">↑</div>
+        </div>
+        <div class="card expense-card">
+          <div class="card-label">Total Expenses</div>
+          <div class="card-value" id="expense">₹0</div>
+          <div class="card-icon">↓</div>
+        </div>
+      </div>
+
+      <!-- Category Breakdown -->
+      <div class="section-box">
+        <h2>Spending by Category</h2>
+        <div id="categoryBreakdown" class="category-list"></div>
+      </div>
+
+      <!-- Recent Transactions -->
+      <div class="section-box">
+        <h2>Recent Transactions</h2>
+        <div id="recentList" class="transaction-list"></div>
+      </div>
+    </section>
+
+    <!-- TRANSACTIONS -->
+    <section id="transactions" class="section">
+      <div class="page-header">
+        <h1>All Transactions</h1>
+        <div class="filter-bar">
+          <select id="filterType" onchange="filterTransactions()">
+            <option value="all">All</option>
+            <option value="income">Income</option>
+            <option value="expense">Expense</option>
+          </select>
+          <select id="filterCategory" onchange="filterTransactions()">
+            <option value="all">All Categories</option>
+            <option value="Food">Food</option>
+            <option value="Bills">Bills</option>
+            <option value="Entertainment">Entertainment</option>
+            <option value="Transport">Transport</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Health">Health</option>
+            <option value="Income">Income</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+      <div id="allTransactions" class="transaction-list"></div>
+    </section>
+
+    <!-- ADD NEW -->
+    <section id="add" class="section">
+      <div class="page-header">
+        <h1>Add Transaction</h1>
+      </div>
+      <div class="form-container">
+        <!-- Type Toggle -->
+        <div class="type-toggle">
+          <button class="toggle-btn active" id="expenseBtn" onclick="setType('expense')">💸 Expense</button>
+          <button class="toggle-btn" id="incomeBtn" onclick="setType('income')">💰 Income</button>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Title</label>
+            <input type="text" id="title" placeholder="e.g. Grocery Shopping" />
+          </div>
+          <div class="form-group">
+            <label>Amount (₹)</label>
+            <input type="number" id="amount" placeholder="e.g. 500" min="0" />
+          </div>
+          <div class="form-group">
+            <label>Category</label>
+            <select id="category">
+              <option value="Food">🍔 Food</option>
+              <option value="Bills">⚡ Bills</option>
+              <option value="Entertainment">🎬 Entertainment</option>
+              <option value="Transport">🚗 Transport</option>
+              <option value="Shopping">🛍️ Shopping</option>
+              <option value="Health">💊 Health</option>
+              <option value="Income">💼 Income</option>
+              <option value="Other">📦 Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Date</label>
+            <input type="date" id="date" />
+          </div>
+        </div>
+
+        <button class="submit-btn" onclick="addExpense()">Add Transaction</button>
+
+        <!-- Success Message -->
+        <div id="successMsg" class="success-msg hidden">✅ Transaction added successfully!</div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Edit Modal -->
+<div id="editModal" class="modal hidden">
+  <div class="modal-box">
+    <h2>Edit Transaction</h2>
+    <input type="hidden" id="editId"/>
+    <div class="form-group">
+      <label>Title</label>
+      <input type="text" id="editTitle"/>
+    </div>
+    <div class="form-group">
+      <label>Amount (₹)</label>
+      <input type="number" id="editAmount"/>
+    </div>
+    <div class="form-group">
+      <label>Category</label>
+      <select id="editCategory">
+        <option value="Food">Food</option>
+        <option value="Bills">Bills</option>
+        <option value="Entertainment">Entertainment</option>
+        <option value="Transport">Transport</option>
+        <option value="Shopping">Shopping</option>
+        <option value="Health">Health</option>
+        <option value="Income">Income</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="submit-btn" onclick="saveEdit()">Save Changes</button>
+      <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
