@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git branch: 'main', url: 'https://github.com/YOUR_USERNAME/expense-tracker.git'
+                git branch: 'main', url: 'https://github.com/pokemon-uc/expense-tracker.git'
             }
         }
 
