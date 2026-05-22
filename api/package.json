@@ -1,0 +1,10 @@
+{
+  "name": "expense-api",
+  "version": "1.0.0",
+  "description": "Expense Tracker API",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^5.2.1",
+    "cors": "^2.8.6"
+  }
+}
