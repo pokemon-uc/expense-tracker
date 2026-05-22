@@ -1,0 +1,26 @@
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+
+- task: NodeTool@0
+  inputs:
+    versionSpec: '18.x'
+  displayName: 'Install Node.js'
+
+- script: |
+    npm install
+  displayName: 'Install dependencies'
+
+- script: |
+    node server.js
+  displayName: 'Run application'
+
+- task: Docker@2
+  inputs:
+    command: build
+    Dockerfile: '**/Dockerfile'
+    tags: latest
