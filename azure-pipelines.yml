@@ -1,26 +1,60 @@
 trigger:
-- main
+  branches:
+    include:
+    - main
 
 pool:
   vmImage: ubuntu-latest
+
+variables:
+  nodeVersion: '18.x'
+  npm_config_cache: $(Pipeline.Workspace)/.npm
 
 steps:
 
 - task: NodeTool@0
   inputs:
-    versionSpec: '18.x'
-  displayName: 'Install Node.js'
+    versionSpec: $(nodeVersion)
+  displayName: 'Install Node.js 18.x'
+
+- task: Cache@2
+  inputs:
+    key: npm | $(Agent.OS) | backend/package-lock.json
+    restoreKeys: npm | $(Agent.OS)
+    path: $(npm_config_cache)
+  displayName: 'Cache npm packages'
 
 - script: |
-    npm install
+    cd backend
+    npm ci
   displayName: 'Install dependencies'
 
 - script: |
-    node server.js
-  displayName: 'Run application'
+    cd backend
+    npm run build --if-present
+  displayName: 'Build application'
 
-- task: Docker@2
+- script: |
+    cd backend
+    npm test --if-present
+  displayName: 'Run tests'
+  continueOnError: true
+
+- task: SonarCloudPrepare@1
   inputs:
-    command: build
-    Dockerfile: '**/Dockerfile'
-    tags: latest
+    SonarCloud: 'SonarCloud'
+    organization: 'your-org-key'
+    scannerMode: 'CLI'
+    configMode: 'manual'
+    cliProjectKey: 'your-project-key'
+    cliProjectName: 'Expense App'
+    cliSources: 'backend'
+  displayName: 'Prepare SonarCloud Analysis'
+
+- task: SonarCloudAnalyze@1
+  displayName: 'Run SonarCloud Analysis'
+
+- task: SonarCloudPublish@1
+  inputs:
+    pollingTimeoutSec: '300'
+  displayName: 'Publish SonarCloud Results'

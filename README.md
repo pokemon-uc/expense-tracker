@@ -37,6 +37,6 @@ Open http://localhost:3001
 ## API Endpoints
 - GET /api/expenses — Get all transactions
 - POST /api/expenses — Add transaction
-- PUT /api/expenses/:id — Update transaction
+- PUT /api/expenses/:id — Update transaction    
 - DELETE /api/expenses/:id — Delete transaction
 - GET /api/summary — Get income/expense summary
